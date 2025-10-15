@@ -1,0 +1,198 @@
+@model AlbertaWeatherDashboard.Models.WeatherDashboardViewModel
+@{
+    ViewData["Title"] = "Alberta Weather Dashboard";
+}
+
+<div class="weather-dashboard">
+    <div class="container-fluid">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-4 text-primary">
+                    <i class="fas fa-thermometer-half"></i>
+                    Alberta Weather Dashboard
+                </h1>
+                <p class="lead text-muted">Current temperature extremes across Alberta, Canada</p>
+                <small class="text-muted">Last updated: @Model.LastRefreshed.ToString("MMM dd, yyyy - HH:mm") UTC</small>
+            </div>
+        </div>
+
+        @if (Model.IsLoading)
+        {
+            <div class="row">
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading weather data...</p>
+                </div>
+            </div>
+        }
+        else if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        @Model.ErrorMessage
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <!-- Hottest Places -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-header bg-danger text-white">
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-fire"></i>
+                                Hottest Places
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            @if (Model.HottestPlaces != null && Model.HottestPlaces.Any())
+                            {
+                                @for (int i = 0; i < Model.HottestPlaces.Count; i++)
+                                {
+                                    var place = Model.HottestPlaces[i];
+                                    var medalClass = i == 0 ? "text-warning" : i == 1 ? "text-secondary" : "text-dark";
+                                    var medalIcon = i == 0 ? "fas fa-medal" : i == 1 ? "fas fa-medal" : "fas fa-award";
+
+                                    <div class="weather-item p-3 @(i < Model.HottestPlaces.Count - 1 ? "border-bottom" : "")">
+                                        <div class="row align-items-center">
+                                            <div class="col-2 text-center">
+                                                <i class="@medalIcon @medalClass fa-2x"></i>
+                                            </div>
+                                            <div class="col-5">
+                                                <h5 class="mb-1">@place.CityName</h5>
+                                                <small class="text-muted text-capitalize">@place.Description</small>
+                                            </div>
+                                            <div class="col-3 text-center">
+                                                <span class="temperature display-6 text-danger">@place.Temperature.ToString("F1")°</span>
+                                            </div>
+                                            <div class="col-2 text-center">
+                                                <img src="https://openweathermap.org/img/w/@(place.IconCode).png" 
+                                                     alt="Weather icon" class="weather-icon" />
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-12">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-tint"></i> @place.Humidity% humidity
+                                                    <span class="mx-2">|</span>
+                                                    <i class="fas fa-wind"></i> @place.WindSpeed.ToString("F1") m/s
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coldest Places -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-header bg-info text-white">
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-snowflake"></i>
+                                Coldest Places
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            @if (Model.ColdestPlaces != null && Model.ColdestPlaces.Any())
+                            {
+                                @for (int i = 0; i < Model.ColdestPlaces.Count; i++)
+                                {
+                                    var place = Model.ColdestPlaces[i];
+                                    var medalClass = i == 0 ? "text-warning" : i == 1 ? "text-secondary" : "text-dark";
+                                    var medalIcon = i == 0 ? "fas fa-medal" : i == 1 ? "fas fa-medal" : "fas fa-award";
+
+                                    <div class="weather-item p-3 @(i < Model.ColdestPlaces.Count - 1 ? "border-bottom" : "")">
+                                        <div class="row align-items-center">
+                                            <div class="col-2 text-center">
+                                                <i class="@medalIcon @medalClass fa-2x"></i>
+                                            </div>
+                                            <div class="col-5">
+                                                <h5 class="mb-1">@place.CityName</h5>
+                                                <small class="text-muted text-capitalize">@place.Description</small>
+                                            </div>
+                                            <div class="col-3 text-center">
+                                                <span class="temperature display-6 text-info">@place.Temperature.ToString("F1")°</span>
+                                            </div>
+                                            <div class="col-2 text-center">
+                                                <img src="https://openweathermap.org/img/w/@(place.IconCode).png" 
+                                                     alt="Weather icon" class="weather-icon" />
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-12">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-tint"></i> @place.Humidity% humidity
+                                                    <span class="mx-2">|</span>
+                                                    <i class="fas fa-wind"></i> @place.WindSpeed.ToString("F1") m/s
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 text-center">
+                    <button class="btn btn-primary btn-lg" onclick="location.reload()">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh Data
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .weather-dashboard {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px 0;
+    }
+
+    .weather-item {
+        transition: all 0.3s ease;
+    }
+
+    .weather-item:hover {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .temperature {
+        font-weight: bold;
+    }
+
+    .weather-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .card {
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0.95);
+    }
+
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+    }
+
+    .btn-primary {
+        border-radius: 25px;
+        padding: 10px 30px;
+    }
+</style>
